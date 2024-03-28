@@ -20,11 +20,14 @@ def home():
 
 @app.route('/agents', methods=['GET'])
 def list_agents():
-    return "Here you will see a list of all GenAI agents."
+    agents = Agent.query.all()
+    return render_template('list_agents.html', agents=agents)
 
 @app.route('/agents/<int:agent_id>', methods=['GET'])
 def show_agent(agent_id):
-    return f"Details of GenAI agent {agent_id}."
+    agent = Agent.query.get_or_404(agent_id)
+    return render_template('show_agent.html', agent=agent)
+
 
 @app.route('/agents/new', methods=['GET', 'POST'])
 def create_agent():

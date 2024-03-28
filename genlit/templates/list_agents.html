@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of GenAI Agents</title>
+</head>
+<body>
+    <h1>List of GenAI Agents</h1>
+    <ul>
+        {% for agent in agents %}
+            <li><a href="{{ url_for('show_agent', agent_id=agent.id) }}">{{ agent.name }}</a></li>
+        {% else %}
+            <li>No agents found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
