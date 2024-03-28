@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
 function AgentsList() {
   const [agents, setAgents] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Adjust the URL if your API endpoint differs
@@ -22,9 +24,15 @@ function AgentsList() {
       .catch(error => console.error("There was an error deleting the agent:", error));
   };
 
+  const handleCreateNew = () => {
+    navigate('/create-agent'); // Use navigate to go to the create-agent page
+  };
+
+
   return (
     <div>
       <h1>List of GenAI Agents</h1>
+      <button onClick={handleCreateNew} style={{ marginBottom: '20px' }}>Create New Agent</button> {/* Add the create new agent button */}
       <ul>
         {agents.length > 0 ? (
           agents.map(agent => (
