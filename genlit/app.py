@@ -1,8 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
-app = Flask(__name__)
+from flask import (Flask, jsonify, redirect, render_template, request,
+                   send_from_directory, session, url_for)
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
+
+app = Flask(__name__, static_folder='../frontend/build', static_url_path='')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://genlit_admin:genlit_admin@localhost/genlit_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -29,6 +32,27 @@ class Agent(db.Model):
     def __repr__(self):
         return f'<Agent {self.name}>'
     
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+    
+
+@app.route('/api/agents', methods=['GET'])
+def api_list_agents():
+    agents = Agent.query.filter_by(is_active=True).all()
+    return jsonify([{'id': agent.id, 'name': agent.name} for agent in agents])
+
+
+@app.route('/api/agents/<int:agent_id>', methods=['GET'])
+def api_show_agent(agent_id):
+    agent = Agent.query.get_or_404(agent_id)
+    return jsonify({'id': agent.id, 'name': agent.name, 'is_active': agent.is_active})
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -54,20 +78,6 @@ def register():
         db.session.commit()
         return redirect(url_for('login'))
     return render_template('register.html')
-
-@app.route('/')
-def home():
-    return "Welcome to GenLit - Your GenAI Agents Management Platform!"
-
-@app.route('/agents', methods=['GET'])
-def list_agents():
-    agents = Agent.query.filter_by(is_active=True).all()
-    return render_template('list_agents.html', agents=agents)
-
-@app.route('/agents/<int:agent_id>', methods=['GET'])
-def show_agent(agent_id):
-    agent = Agent.query.get_or_404(agent_id)
-    return render_template('show_agent.html', agent=agent)
 
 
 @app.route('/agents/new', methods=['GET', 'POST'])
