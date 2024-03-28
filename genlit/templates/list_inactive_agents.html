@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List of Inactive GenAI Agents</title>
+</head>
+<body>
+    <h1>List of Inactive GenAI Agents</h1>
+    <ul>
+        {% for agent in agents %}
+            <li>
+                {{ agent.name }}
+                <!-- Restore Form -->
+                <form action="{{ url_for('restore_agent', agent_id=agent.id) }}" method="post" style="display: inline;">
+                    <input type="submit" value="Restore">
+                </form>
+            </li>
+        {% else %}
+            <li>No inactive agents found.</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('list_agents') }}">Back to Active Agents</a>
+</body>
+</html>

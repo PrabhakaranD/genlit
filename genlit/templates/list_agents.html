@@ -8,10 +8,16 @@
     <h1>List of GenAI Agents</h1>
     <ul>
         {% for agent in agents %}
-            <li><a href="{{ url_for('show_agent', agent_id=agent.id) }}">{{ agent.name }}</a></li>
+            <li>
+                <a href="{{ url_for('show_agent', agent_id=agent.id) }}">{{ agent.name }}</a>
+                <form action="{{ url_for('delete_agent', agent_id=agent.id) }}" method="post" style="display: inline;">
+                    <input type="submit" value="Delete">
+                </form>
+            </li>
         {% else %}
             <li>No agents found.</li>
         {% endfor %}
     </ul>
+    <a href="{{ url_for('list_inactive_agents') }}">View Deleted Agents</a>
 </body>
 </html>
